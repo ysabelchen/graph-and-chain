@@ -77,6 +77,8 @@ def process_results(partition_type):
     # plt.savefig(f"./results/experiment1/{partition_type}_seat_distribution.png")
     # plt.show()
 
+    #TODO: save seats to csv for each party
+
 def plot_seat_distribution(votes, partition_type, party_name):
     """Plot seat distribution with normal fit for given party's votes."""
     plt.figure(figsize=(10, 6))
