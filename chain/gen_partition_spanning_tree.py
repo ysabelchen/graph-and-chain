@@ -148,3 +148,51 @@ def generate_spanning_tree_partition(graph, num_districts):
 #          edgecolor="black",
 #          linewidth=0.1)  
 # plt.show()
+
+import geopandas as gpd
+import matplotlib.pyplot as plt
+import json
+import numpy as np
+import matplotlib.cm as cm
+from matplotlib.colors import ListedColormap
+
+def plot_district_map(partition_type, file_id):
+    # Load partition assignment
+    partition_file = f"./results/chain-final-partitions/{partition_type}_final_partition0.json"
+    with open(partition_file) as f:
+        assignment = json.load(f)
+    assignment = {int(k): v for k, v in assignment.items()}
+
+    # Load shapefile
+    gdf = gpd.read_file("../data/shapefile_with_islands/shapefile_with_islands.shp")
+    
+    # Assign districts
+    gdf['district_id'] = gdf.index.map(assignment)
+
+    # Create colormap
+    base_colors = cm.tab20.colors * 3  # Repeat to ensure at least 52 colors
+    shuffled_colors = np.random.permutation(base_colors[:52])
+    random_cmap = ListedColormap(shuffled_colors)
+
+    # Plot
+    fig, ax = plt.subplots(figsize=(15, 10))
+    gdf.plot("district_id", 
+             cmap=random_cmap,
+             edgecolor="black",
+             linewidth=0.1,
+             ax=ax)
+    
+    plt.title(f"{partition_type.replace('_', ' ').title()} Final Partition")
+    plt.axis('off')
+    
+    # Save plot
+    plt.savefig(f"./results/chain-final-partitions/{partition_type}_final_map0.png", 
+                bbox_inches='tight', 
+                dpi=300)
+    plt.show()
+
+if __name__ == "__main__":
+    # Plot maps for each partition type
+    plot_district_map("spanning_tree", 0)
+    plot_district_map("random_nodes", 0)
+    plot_district_map("current_districting", 0)
